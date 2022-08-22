@@ -11,17 +11,22 @@ class PayuniApi
         $this->type = $type;
     }
     public function test(){
-        $this->checkParams();
-        echo 'test payuni api';
+        $checkArr = $this->checkParams();
+        if( $checkArr['success'] ) {
+            echo 'test payuni api';
+        }
+        else {
+            echo $checkArr['message'];
+        }
     }
     public function checkParams() {
         try {
             if ($this->encryptInfo['MerID'] == null || $this->encryptInfo['MerID'] == '') {
-                throw new Exception('You need to supply the MerID or MerID');
+                throw new Exception('You need to supply the MerID');
             }
         }
         catch (Exception $e) {
-            return $e->getMessage();
+            return ['success' => false, 'message' => $e->getMessage()];
         }
     }
 }
