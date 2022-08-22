@@ -6,8 +6,8 @@ class PayuniApi
     public function __construct(array $encryptInfo, string $key, string $iv, string $type = 't')
     {
         try {
-            if(!is_array($encryptInfo)) {
-                throw new Exception('is not an array');
+            if(!isset($encryptInfo['merID'])) {
+                throw new Exception('is not have merID');
             }
         }
         catch(Exception $e) {
