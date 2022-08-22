@@ -1,0 +1,23 @@
+{
+    "name": "payuni/sdk",
+    "description": "payuni sdk",
+    "keywords": ["payuni", "sdk"],
+    "homepage": "https://github.com/payuni/PHP_SDK",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Payuni\\Sdk\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "payuni",
+            "email": "Yifan.Shu@presco.ws"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "php": "^7.0|^8.0"
+    }
+}
