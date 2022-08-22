@@ -1,5 +1,5 @@
 <?php
-namespace payuni\sdk;
+namespace Payuni\Sdk;
 
 class PayuniApi
 {
