@@ -22,7 +22,7 @@ class PayuniApi
     public function checkParams() {
         try {
             if ($this->encryptInfo['MerID'] == null || $this->encryptInfo['MerID'] == '') {
-                throw new Exception('You need to supply the MerID');
+                throw new Exception('MerID');
             }
         }
         catch (Exception $e) {
