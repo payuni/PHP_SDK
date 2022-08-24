@@ -49,57 +49,61 @@ class PayuniApi
                     case 'atm': // 交易建立 虛擬帳號幕後
                     case 'cvs': // 交易建立 超商代碼幕後
                         if ($this->encryptInfo['MerTradeNo'] == null || $this->encryptInfo['MerTradeNo'] == '') {
-                            throw new Exception('MerTradeNo');
+                            throw new Exception('MerTradeNo is not setting');
                         }
                         if ($this->encryptInfo['TradeAmt'] == null || $this->encryptInfo['TradeAmt'] == '') {
-                            throw new Exception('TradeAmt');
+                            throw new Exception('TradeAmt is not setting');
                         }
                         break;
                     case 'credit': // 交易建立 信用卡幕後
                         if ($this->EncryptInfo['MerTradeNo'] == null || $this->EncryptInfo['MerTradeNo'] == '') {
-                            throw new Exception('MerTradeNo');
+                            throw new Exception('MerTradeNo is not setting');
                         }
                         if ($this->EncryptInfo['TradeAmt'] == null || $this->EncryptInfo['TradeAmt'] == '') {
-                            throw new Exception('TradeAmt');
+                            throw new Exception('TradeAmt is not setting');
                         }
                         if ($this->EncryptInfo['CardNo'] == null || $this->EncryptInfo['CardNo'] == '') {
-                            throw new Exception('CardNo');
+                            throw new Exception('CardNo is not setting');
                         }
                         if ($this->EncryptInfo['CardCVC'] == null || $this->EncryptInfo['CardCVC'] == '') {
-                            throw new Exception('CardCVC');
+                            throw new Exception('CardCVC is not setting');
                         }
                         break;
                     case 'trade_close': // 交易請退款
                         if ($this->EncryptInfo['TradeNo'] == null || $this->EncryptInfo['TradeNo'] == '') {
-                            throw new Exception('TradeNo');
+                            throw new Exception('TradeNo is not setting');
                         }
                         if ($this->EncryptInfo['CloseType'] == null || $this->EncryptInfo['CloseType'] == '') {
-                            throw new Exception('CloseType');
+                            throw new Exception('CloseType is not setting');
                         }
                         break;
                     case 'trade_cancel': // 交易取消授權
                         if ($this->EncryptInfo['TradeNo'] == null || $this->EncryptInfo['TradeNo'] == '') {
-                            throw new Exception('TradeNo');
+                            throw new Exception('TradeNo is not setting');
                         }
                         break;
                     case 'credit_bind_cancel': // 信用卡token取消(約定/記憶卡號)
                         if ($this->EncryptInfo['UseTokenType'] == null || $this->EncryptInfo['UseTokenType'] == '') {
-                            throw new Exception('UseTokenType');
+                            throw new Exception('UseTokenType is not setting');
                         }
                         if ($this->EncryptInfo['BindVal'] == null || $this->EncryptInfo['BindVal'] == '') {
-                            throw new Exception('BindVal');
+                            throw new Exception('BindVal is not setting');
                         }
                         break;
                     case 'trade_query': // 交易查詢
                     case 'credit_bind_query': // 信用卡token查詢(約定)
                         break;
                     default:
-                        throw new Exception('Unknown');
+                        throw new Exception('Unknown params');
                         break;
                 }
                 $this->SetParams($contrast[$tradeType]);
                 $resultArr = $this->CurlApi();
                 $resultArr['ResultInfo'] = json_decode($resultArr['ResultInfo'], true);
+                $chkHash = $this->HashInfo($resultArr['ResultInfo']['EncryptInfo']);
+                if ( $chkHash != $resultArr['ResultInfo']['HashInfo']) {
+                    throw new Exception('Hash mismatch');
+                }
                 $resultArr['ResultInfo']['EncryptInfo'] = $this->Decrypt($resultArr['ResultInfo']['EncryptInfo']);
                 return ['success' => true, 'message' => $resultArr];
             }
@@ -119,10 +123,10 @@ class PayuniApi
     public function CheckParams() {
         try {
             if ($this->encryptInfo['MerID'] == null || $this->encryptInfo['MerID'] == '') {
-                throw new Exception('MerID');
+                throw new Exception('MerID is not setting');
             }
             if ($this->encryptInfo['Timestamp'] == null || $this->encryptInfo['Timestamp'] == '') {
-                throw new Exception('Timestamp');
+                throw new Exception('Timestamp is not setting');
             }
             return ['success' => true, 'message' => ''];
         }
