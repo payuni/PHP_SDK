@@ -56,37 +56,37 @@ class PayuniApi
                         }
                         break;
                     case 'credit': // 交易建立 信用卡幕後
-                        if ($this->EncryptInfo['MerTradeNo'] == null || $this->EncryptInfo['MerTradeNo'] == '') {
+                        if ($this->encryptInfo['MerTradeNo'] == null || $this->encryptInfo['MerTradeNo'] == '') {
                             throw new Exception('MerTradeNo is not setting');
                         }
-                        if ($this->EncryptInfo['TradeAmt'] == null || $this->EncryptInfo['TradeAmt'] == '') {
+                        if ($this->encryptInfo['TradeAmt'] == null || $this->encryptInfo['TradeAmt'] == '') {
                             throw new Exception('TradeAmt is not setting');
                         }
-                        if ($this->EncryptInfo['CardNo'] == null || $this->EncryptInfo['CardNo'] == '') {
+                        if ($this->encryptInfo['CardNo'] == null || $this->encryptInfo['CardNo'] == '') {
                             throw new Exception('CardNo is not setting');
                         }
-                        if ($this->EncryptInfo['CardCVC'] == null || $this->EncryptInfo['CardCVC'] == '') {
+                        if ($this->encryptInfo['CardCVC'] == null || $this->encryptInfo['CardCVC'] == '') {
                             throw new Exception('CardCVC is not setting');
                         }
                         break;
                     case 'trade_close': // 交易請退款
-                        if ($this->EncryptInfo['TradeNo'] == null || $this->EncryptInfo['TradeNo'] == '') {
+                        if ($this->encryptInfo['TradeNo'] == null || $this->encryptInfo['TradeNo'] == '') {
                             throw new Exception('TradeNo is not setting');
                         }
-                        if ($this->EncryptInfo['CloseType'] == null || $this->EncryptInfo['CloseType'] == '') {
+                        if ($this->encryptInfo['CloseType'] == null || $this->encryptInfo['CloseType'] == '') {
                             throw new Exception('CloseType is not setting');
                         }
                         break;
                     case 'trade_cancel': // 交易取消授權
-                        if ($this->EncryptInfo['TradeNo'] == null || $this->EncryptInfo['TradeNo'] == '') {
+                        if ($this->encryptInfo['TradeNo'] == null || $this->encryptInfo['TradeNo'] == '') {
                             throw new Exception('TradeNo is not setting');
                         }
                         break;
                     case 'credit_bind_cancel': // 信用卡token取消(約定/記憶卡號)
-                        if ($this->EncryptInfo['UseTokenType'] == null || $this->EncryptInfo['UseTokenType'] == '') {
+                        if ($this->encryptInfo['UseTokenType'] == null || $this->encryptInfo['UseTokenType'] == '') {
                             throw new Exception('UseTokenType is not setting');
                         }
-                        if ($this->EncryptInfo['BindVal'] == null || $this->EncryptInfo['BindVal'] == '') {
+                        if ($this->encryptInfo['BindVal'] == null || $this->encryptInfo['BindVal'] == '') {
                             throw new Exception('BindVal is not setting');
                         }
                         break;
@@ -98,7 +98,13 @@ class PayuniApi
                         break;
                 }
                 $this->SetParams($contrast[$tradeType]);
-                $resultArr = $this->CurlApi();
+                if ($tradeType == 'upp') {
+                    $this->HtmlApi();
+                    exit;
+                }
+                else {
+                    $resultArr = $this->CurlApi();
+                }
                 $resultArr['ResultInfo'] = json_decode($resultArr['ResultInfo'], true);
                 $chkHash = $this->HashInfo($resultArr['ResultInfo']['EncryptInfo']);
                 if ( $chkHash != $resultArr['ResultInfo']['HashInfo']) {
@@ -128,7 +134,7 @@ class PayuniApi
             if ($this->encryptInfo['Timestamp'] == null || $this->encryptInfo['Timestamp'] == '') {
                 throw new Exception('Timestamp is not setting');
             }
-            return ['success' => true, 'message' => ''];
+            return ['success' => true, 'message' => 'params is set correctly'];
         }
         catch (Exception $e) {
             return ['success' => false, 'message' => $e->getMessage()];
@@ -140,10 +146,25 @@ class PayuniApi
      * @ dateTime 2022-08-23
      */
     public function SetParams(string $type = '') {
-        $this->parameter['MerID'] = $this->encryptInfo['MerID'];
+        $this->parameter['MerID']       = $this->encryptInfo['MerID'];
         $this->parameter['EncryptInfo'] = $this->Encrypt();
         $this->parameter['HashInfo']    = $this->HashInfo($this->parameter['EncryptInfo']);
         $this->apiUrl = $this->apiUrl . $type;
+    }
+    /**
+     * 前景呼叫
+     * @ author    Yifan
+     * @ dateTime 2022-08-25
+     */
+    public function HtmlApi() {
+        $htmlprint  = "<html><body onload='document.getElementById(\"upp\").submit();'>";
+        $htmlprint .= "<form action='".$this->apiUrl."' method='post' id='upp'>";
+        $htmlprint .= "<input name='MerID' type='hidden' value='".$this->parameter['MerID']."' />";
+        $htmlprint .= "<input name='Version' type='hidden' value='".$this->parameter['Version']."' />";
+        $htmlprint .= "<input name='EncryptInfo' type='hidden' value='".$this->parameter['EncryptInfo']."' />";
+        $htmlprint .= "<input name='HashInfo' type='hidden' value='".$this->parameter['HashInfo']."' />";
+        $htmlprint .= "</form></body></html>";
+        echo $htmlprint;
     }
     /**
      * CURL
