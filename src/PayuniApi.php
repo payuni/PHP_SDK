@@ -4,7 +4,7 @@ use Exception;
 
 class PayuniApi
 {
-    public function __construct(array $encryptInfo, string $key, string $iv, string $type = '')
+    public function __construct(array $encryptInfo, string $key, string $iv, string $type = 't')
     {
         $this->encryptInfo = $encryptInfo;
         $this->merKey = $key;
@@ -12,7 +12,8 @@ class PayuniApi
         $this->apiUrl = "api.payuni.com.tw/api/";
         $prefix       = "https://";
         if ($type == 't') {
-            $prefix .= "sandbox-";
+            // $prefix .= "sandbox-";
+            $prefix .= "t";
         }
         $this->apiUrl = $prefix . $this->apiUrl;
         $this->parameter = [
