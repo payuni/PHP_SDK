@@ -12,13 +12,19 @@ composer require payuni/sdk
 # 使用方式
 * 正式區
 ```php
-$payuniApi = new \Payuni\Sdk\PayuniApi($encryptInfo, $merKey, $merIV);
-$result = $payuniApi->UniversalTrade($mode);
+$payuniApi = new \Payuni\Sdk\PayuniApi($merKey, $merIV);
 ```
 * 測試區
 ```php
-$payuniApi = new \Payuni\Sdk\PayuniApi($encryptInfo, $merKey, $merIV, $type);
-$result = $payuniApi->UniversalTrade($mode);
+$payuniApi = new \Payuni\Sdk\PayuniApi($merKey, $merIV, $type);
+```
+* API串接
+```php
+$result = $payuniApi->UniversalTrade($encryptInfo, $mode);
+```
+* upp ReturnUrl接收到回傳參數後處理方式
+```php
+$result = $payuniApi->ResultProcess($requestData);
 ```
 * 參數說明
   * $encryptInfo
