@@ -126,7 +126,7 @@ class PayuniApi
      * @ author    Yifan
      * @ dateTime  2022-08-23
      */
-    public function CheckParams() {
+    private function CheckParams() {
         try {
             if ($this->encryptInfo['MerID'] == null || $this->encryptInfo['MerID'] == '') {
                 throw new Exception('MerID is not setting');
@@ -145,7 +145,7 @@ class PayuniApi
      * @author    Yifan
      * @ dateTime 2022-08-23
      */
-    public function SetParams(string $type = '') {
+    private function SetParams(string $type = '') {
         $this->parameter['MerID']       = $this->encryptInfo['MerID'];
         $this->parameter['EncryptInfo'] = $this->Encrypt();
         $this->parameter['HashInfo']    = $this->HashInfo($this->parameter['EncryptInfo']);
@@ -156,7 +156,7 @@ class PayuniApi
      * @ author    Yifan
      * @ dateTime 2022-08-25
      */
-    public function HtmlApi() {
+    private function HtmlApi() {
         $htmlprint  = "<html><body onload='document.getElementById(\"upp\").submit();'>";
         $htmlprint .= "<form action='".$this->apiUrl."' method='post' id='upp'>";
         $htmlprint .= "<input name='MerID' type='hidden' value='".$this->parameter['MerID']."' />";
@@ -171,7 +171,7 @@ class PayuniApi
      * @ author   Yifan
      * @ dateTime 2022-08-23
      */
-    public function CurlApi() {
+    private function CurlApi() {
         $curlError = '-';
         $curlOptions = array(
             CURLOPT_URL            => $this->apiUrl,
@@ -204,7 +204,7 @@ class PayuniApi
      * 加密
      *
      */
-    function Encrypt() {
+    private function Encrypt() {
         $tag = '';
         $encrypted = openssl_encrypt(http_build_query($this->encryptInfo), 'aes-256-gcm', trim($this->merKey), 0, trim($this->merIV), $tag);
         return trim(bin2hex($encrypted . ':::' . base64_encode($tag)));
@@ -212,7 +212,7 @@ class PayuniApi
     /**
      * 解密
      */
-    function Decrypt(string $encryptStr = '') {
+    private function Decrypt(string $encryptStr = '') {
         list($encryptData, $tag) = explode(':::', hex2bin($encryptStr), 2);
         $encryptInfo = openssl_decrypt($encryptData, 'aes-256-gcm', trim($this->merKey), 0, trim($this->merIV), base64_decode($tag));
         parse_str($encryptInfo, $encryptArr);
@@ -221,7 +221,7 @@ class PayuniApi
     /**
      * hash
      */
-    public function HashInfo(string $encryptStr = '') {
+    private function HashInfo(string $encryptStr = '') {
         return strtoupper(hash('sha256', $this->merKey.$encryptStr.$this->merIV));
     }
 }
