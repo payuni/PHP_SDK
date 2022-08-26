@@ -4,18 +4,16 @@ use Exception;
 
 class PayuniApi
 {
-    public function __construct(array $encryptInfo, string $key, string $iv, string $type = 't')
+    public function __construct(array $encryptInfo, string $key, string $iv, string $type = '')
     {
         $this->encryptInfo = $encryptInfo;
         $this->merKey = $key;
         $this->merIV  = $iv;
         $this->apiUrl = "api.payuni.com.tw/api/";
-        $this->apiUrl = "lapi-epay.presco.com.tw/api/";
         $prefix       = "https://";
         if ($type == 't') {
             $prefix .= "sandbox-";
         }
-        $prefix       = "http://";
         $this->apiUrl = $prefix . $this->apiUrl;
         $this->parameter = [
             'MerID'       => '',
@@ -30,7 +28,6 @@ class PayuniApi
      * @ dateTime 2022-08-23
      */
     public function UniversalTrade(string $tradeType) {
-        $checkArr = $this->CheckParams();
         $contrast = [
             'upp' => 'upp',
             'atm' => 'atm',
@@ -42,6 +39,7 @@ class PayuniApi
             'credit_bind_query' => 'credit_bind/query',
             'credit_bind_cancel' => 'credit_bind/cancel',
         ];
+        $checkArr = $this->CheckParams();
         if ( $checkArr['success'] ) {
             try {
                 switch ( $tradeType ) {
