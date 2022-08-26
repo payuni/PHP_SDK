@@ -4,9 +4,9 @@ use Exception;
 
 class PayuniApi
 {
-    public function __construct(array $encryptInfo, string $key, string $iv, string $type = 't')
+    public function __construct(string $key, string $iv, string $type = '')
     {
-        $this->encryptInfo = $encryptInfo;
+        $this->encryptInfo = '';
         $this->merKey = $key;
         $this->merIV  = $iv;
         $this->apiUrl = "api.payuni.com.tw/api/";
@@ -16,6 +16,7 @@ class PayuniApi
             $prefix .= "t";
         }
         $this->apiUrl = $prefix . $this->apiUrl;
+
         $this->parameter = [
             'MerID'       => '',
             'Version'     => '1.0',
@@ -28,7 +29,8 @@ class PayuniApi
      * @author    Yifan
      * @ dateTime 2022-08-23
      */
-    public function UniversalTrade(string $tradeType) {
+    public function UniversalTrade(array $encryptInfo, string $tradeType) {
+        $this->encryptInfo = $encryptInfo;
         $contrast = [
             'upp' => 'upp',
             'atm' => 'atm',
@@ -102,15 +104,9 @@ class PayuniApi
                     exit;
                 }
                 else {
-                    $resultArr = $this->CurlApi();
+                    $result = $this->CurlApi();
+                    return $this->ResultProcess($result);
                 }
-                $resultArr['ResultInfo'] = json_decode($resultArr['ResultInfo'], true);
-                $chkHash = $this->HashInfo($resultArr['ResultInfo']['EncryptInfo']);
-                if ( $chkHash != $resultArr['ResultInfo']['HashInfo']) {
-                    throw new Exception('Hash mismatch');
-                }
-                $resultArr['ResultInfo']['EncryptInfo'] = $this->Decrypt($resultArr['ResultInfo']['EncryptInfo']);
-                return ['success' => true, 'message' => $resultArr];
             }
             catch ( Exception $e ) {
                 return ['success' => false, 'message' => $e->getMessage()];
@@ -118,6 +114,43 @@ class PayuniApi
         }
         else {
             return $checkArr;
+        }
+    }
+    /**
+     * 處理api回傳的結果
+     * @ author    Yifan
+     * @ dateTime 2022-08-26
+     */
+    public function ResultProcess($result) {
+        try {
+            if (is_array($result)) {
+                $resultArr = $result;
+            }
+            else {
+                $resultArr = json_decode($result, true);
+                if (!is_array($resultArr)){
+                    throw new Exception('Result must be an array');
+                }
+            }
+            if (isset($resultArr['EncryptInfo'])){
+                if (isset($resultArr['HashInfo'])){
+                    $chkHash = $this->HashInfo($resultArr['EncryptInfo']);
+                    if ( $chkHash != $resultArr['HashInfo']) {
+                        throw new Exception('Hash mismatch');
+                    }
+                    $resultArr['EncryptInfo'] = $this->Decrypt($resultArr['EncryptInfo']);
+                    return ['success' => true, 'message' => $resultArr];
+                }
+                else {
+                    throw new Exception('missing HashInfo');
+                }
+            }
+            else {
+                throw new Exception('missing EncryptInfo');
+            }
+        }
+        catch ( Exception $e ) {
+            return ['success' => false, 'message' => $e->getMessage()];
         }
     }
     /**
@@ -171,7 +204,6 @@ class PayuniApi
      * @ dateTime 2022-08-23
      */
     private function CurlApi() {
-        $curlError = '-';
         $curlOptions = array(
             CURLOPT_URL            => $this->apiUrl,
             CURLOPT_HEADER         => false,
@@ -186,18 +218,9 @@ class PayuniApi
         $ch = curl_init();
         curl_setopt_array($ch, $curlOptions);
         $result    = curl_exec($ch);
-        $retCode   = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $curlError = curl_errno($ch);
         curl_close($ch);
 
-        $returnInfo = array(
-            'URL'           => $this->apiUrl,
-            'HttpStatus'    => $retCode,
-            'CurlErrorNo'   => $curlError,
-            'ResultInfo'    => $result,
-        );
-
-        return $returnInfo;
+        return $result;
     }
     /**
      * 加密
