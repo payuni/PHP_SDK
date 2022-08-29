@@ -123,6 +123,7 @@ class PayuniApi
      */
     public function ResultProcess($result) {
         try {
+            $hashInfo = '';
             if (is_array($result)) {
                 $resultArr = $result;
             }
@@ -135,7 +136,20 @@ class PayuniApi
             if (isset($resultArr['EncryptInfo'])){
                 if (isset($resultArr['HashInfo'])){
                     $chkHash = $this->HashInfo($resultArr['EncryptInfo']);
-                    if ( $chkHash != $resultArr['HashInfo']) {
+                    // notify的hashinfo是陣列
+                    if ( is_array($resultArr['HashInfo'])) {
+                        if ($resultArr['HashInfo']['success'] > 0) {
+                            $hashInfo = $resultArr['HashInfo']['data'];
+                        }
+                        else {
+                            throw new Exception('Hash failed');
+                        }
+                    }
+                    else {
+                        // reutrn的是字串
+                        $hashInfo = $resultArr['HashInfo'];
+                    }
+                    if ( $chkHash != $hashInfo ) {
                         throw new Exception('Hash mismatch');
                     }
                     $resultArr['EncryptInfo'] = $this->Decrypt($resultArr['EncryptInfo']);
