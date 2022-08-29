@@ -22,7 +22,7 @@ $payuniApi = new \Payuni\Sdk\PayuniApi($merKey, $merIV, $type);
 ```php
 $result = $payuniApi->UniversalTrade($encryptInfo, $mode);
 ```
-* upp ReturnUrl接收到回傳參數後處理方式
+* upp ReturnURL、NotifyURL接收到回傳參數後處理方式
 ```php
 $result = $payuniApi->ResultProcess($requestData);
 ```
