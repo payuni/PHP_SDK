@@ -42,6 +42,7 @@ $result = $payuniApi->ResultProcess($requestData);
     * 請登入PAYUNi平台檢視商店串接資訊取得 Hash IV
   * $type (非必填)
     * 連線測試區 => t
+    * 連線正式區 => 不給該參數或給空值
   * $mode
     * 整合式支付頁 => upp
     * 虛擬帳號幕後 => atm
