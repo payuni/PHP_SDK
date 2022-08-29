@@ -52,7 +52,7 @@ $result = $payuniApi->ResultProcess($requestData);
     * 交易取消授權 => trade_cancel
     * 信用卡Token(約定) => credit_bind_query
     * 信用卡Token取消(約定/記憶卡號) => credit_bind_cancel
-
+* 其餘請參考[範例](https://github.com/payuni/PHP_SDK/tree/main/examples)
 # LICENSE
 ```text
 Copyright 2022 PRESCO. All rights reserved.
