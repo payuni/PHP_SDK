@@ -55,7 +55,7 @@ $result = $payuniApi->ResultProcess($requestData);
 * 其餘請參考[範例](https://github.com/payuni/PHP_SDK/tree/main/examples)
 
 * 原生php
-  * <your file path> => 請自行填入程式所放置之路徑
+  * **your file path** => 請自行填入程式所放置之路徑
 ```php
 namespace Payuni\Sdk;
 require_once('<your file path>/PayuniApi.php');
