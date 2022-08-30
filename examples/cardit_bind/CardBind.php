@@ -14,12 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-namespace App\Http\Controllers\CardBind;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-
-class CardBindController extends Controller
+class CardBind
 {
     public function __construct(Request $request)
     {
