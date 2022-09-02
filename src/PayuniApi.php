@@ -27,8 +27,7 @@ class PayuniApi
         $this->apiUrl = "api.payuni.com.tw/api/";
         $prefix       = "https://";
         if ($type == 't') {
-            // $prefix .= "sandbox-";
-            $prefix .= "t";
+            $prefix .= "sandbox-";
         }
         $this->apiUrl = $prefix . $this->apiUrl;
 
