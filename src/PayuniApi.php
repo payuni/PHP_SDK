@@ -55,6 +55,7 @@ class PayuniApi
             'trade_cancel' => 'trade/cancel',
             'credit_bind_query' => 'credit_bind/query',
             'credit_bind_cancel' => 'credit_bind/cancel',
+            'trade_refund_icash' => 'trade/common/refund/icash',
         ];
         $checkArr = $this->CheckParams();
         if ( $checkArr['success'] ) {
@@ -103,6 +104,14 @@ class PayuniApi
                         }
                         if ($this->encryptInfo['BindVal'] == null || $this->encryptInfo['BindVal'] == '') {
                             throw new Exception('BindVal is not setting');
+                        }
+                        break;
+                    case 'trade_refund_icash': // 愛金卡退款(ICASH)
+                        if ($this->encryptInfo['TradeNo'] == null || $this->encryptInfo['TradeNo'] == '') {
+                            throw new Exception('TradeNo is not setting');
+                        }
+                        if ($this->encryptInfo['TradeAmt'] == null || $this->encryptInfo['TradeAmt'] == '') {
+                            throw new Exception('TradeAmt is not setting');
                         }
                         break;
                     case 'trade_query': // 交易查詢

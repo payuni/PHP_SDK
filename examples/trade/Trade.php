@@ -67,4 +67,19 @@ class Trade
         ];
         $result = $this->payuniApi->UniversalTrade($encryptInfo, 'trade_cancel');
     }
+    /**
+     * trade refund icash sample code
+     * @author   presco.
+     * @datetime 2022/10/12
+     *
+     */
+    public function tradeRefundIcash(){
+        $encryptInfo = [
+            'MerID' => 'abc',
+            'TradeNo' => '1665472985627866043',
+            'TradeAmt' => 100,
+            'Timestamp' => time()
+        ];
+        $result = $this->payuniApi->UniversalTrade($encryptInfo, 'trade_refund_icash');
+    }
 }
