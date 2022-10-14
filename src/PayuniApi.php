@@ -204,7 +204,7 @@ class PayuniApi
         $this->parameter['MerID']       = $this->encryptInfo['MerID'];
         $this->parameter['EncryptInfo'] = $this->Encrypt();
         $this->parameter['HashInfo']    = $this->HashInfo($this->parameter['EncryptInfo']);
-        $this->apiUrl = $this->apiUrl . $type;
+        $this->curlUrl = $this->apiUrl . $type;
     }
     /**
      * 前景呼叫
@@ -213,7 +213,7 @@ class PayuniApi
      */
     private function HtmlApi() {
         $htmlprint  = "<html><body onload='document.getElementById(\"upp\").submit();'>";
-        $htmlprint .= "<form action='".$this->apiUrl."' method='post' id='upp'>";
+        $htmlprint .= "<form action='".$this->curlUrl."' method='post' id='upp'>";
         $htmlprint .= "<input name='MerID' type='hidden' value='".$this->parameter['MerID']."' />";
         $htmlprint .= "<input name='Version' type='hidden' value='".$this->parameter['Version']."' />";
         $htmlprint .= "<input name='EncryptInfo' type='hidden' value='".$this->parameter['EncryptInfo']."' />";
@@ -228,7 +228,7 @@ class PayuniApi
      */
     private function CurlApi() {
         $curlOptions = array(
-            CURLOPT_URL            => $this->apiUrl,
+            CURLOPT_URL            => $this->curlUrl,
             CURLOPT_HEADER         => false,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_USERAGENT      => 'PRESCOSDKAPI',
