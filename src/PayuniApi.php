@@ -78,8 +78,13 @@ class PayuniApi
                         if ($this->encryptInfo['TradeAmt'] == null || $this->encryptInfo['TradeAmt'] == '') {
                             throw new Exception('TradeAmt is not setting');
                         }
-                        if ($this->encryptInfo['CardNo'] == null || $this->encryptInfo['CardNo'] == '') {
-                            throw new Exception('CardNo is not setting');
+                        if (!isset($this->encryptInfo['CreditHash'])) {
+                            if ($this->encryptInfo['CardNo'] == null || $this->encryptInfo['CardNo'] == '') {
+                                throw new Exception('CardNo is not setting');
+                            }
+                            if ($this->encryptInfo['CardExpired'] == null || $this->encryptInfo['CardExpired'] == '') {
+                                throw new Exception('CardExpired is not setting');
+                            }
                         }
                         if ($this->encryptInfo['CardCVC'] == null || $this->encryptInfo['CardCVC'] == '') {
                             throw new Exception('CardCVC is not setting');
