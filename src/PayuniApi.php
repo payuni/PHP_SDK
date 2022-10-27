@@ -160,6 +160,9 @@ class PayuniApi
                     throw new Exception('Result must be an array');
                 }
             }
+            if ("ERROR" == $resultArr['Status'] ) {
+                return ['success' => true, 'message' => $resultArr];
+            }
             if (isset($resultArr['EncryptInfo'])){
                 if (isset($resultArr['HashInfo'])){
                     $chkHash = $this->HashInfo($resultArr['EncryptInfo']);
