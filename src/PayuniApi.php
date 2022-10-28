@@ -43,7 +43,7 @@ class PayuniApi
      * @author    Yifan
      * @ dateTime 2022-08-23
      */
-    public function UniversalTrade(array $encryptInfo, string $tradeType) {
+    public function UniversalTrade(array $encryptInfo, string $tradeType, int $workType = 1) {
         $this->encryptInfo = $encryptInfo;
         $contrast = [
             'upp' => 'upp',
@@ -126,7 +126,7 @@ class PayuniApi
                         throw new Exception('Unknown params');
                         break;
                 }
-                $this->SetParams($contrast[$tradeType]);
+                $this->SetParams($contrast[$tradeType], $workType);
                 if ($tradeType == 'upp') {
                     $this->HtmlApi();
                     exit;
@@ -208,10 +208,17 @@ class PayuniApi
      * @author    Yifan
      * @ dateTime 2022-08-23
      */
-    private function SetParams(string $type = '') {
+    private function SetParams(string $type = '', int $workType = 1) {
+        if (isset($this->encryptInfo['TradeGateway'])) {
+            $tradeGateway = $this->encryptInfo['TradeGateway'];
+            unset($this->encryptInfo['TradeGateway']);
+        }
         $this->parameter['MerID']       = $this->encryptInfo['MerID'];
         $this->parameter['EncryptInfo'] = $this->Encrypt();
         $this->parameter['HashInfo']    = $this->HashInfo($this->parameter['EncryptInfo']);
+        if ( in_array($workType,[4,6])) {
+            $this->parameter['TradeGateway']= $tradeGateway;
+        }
         $this->curlUrl = $this->apiUrl . $type;
     }
     /**
