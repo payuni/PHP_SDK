@@ -85,9 +85,9 @@ class PayuniApi
                             if ($this->encryptInfo['CardExpired'] == null || $this->encryptInfo['CardExpired'] == '') {
                                 throw new Exception('CardExpired is not setting');
                             }
-                        }
-                        if ($this->encryptInfo['CardCVC'] == null || $this->encryptInfo['CardCVC'] == '') {
-                            throw new Exception('CardCVC is not setting');
+                            if ($this->encryptInfo['CardCVC'] == null || $this->encryptInfo['CardCVC'] == '') {
+                                throw new Exception('CardCVC is not setting');
+                            }
                         }
                         break;
                     case 'trade_close': // 交易請退款
