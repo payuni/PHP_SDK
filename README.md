@@ -36,6 +36,15 @@ $result = $payuniApi->ResultProcess($requestData);
             ...
         ];
   ```
+  * 若要使用代理商功能請在encryptInfo裡多加上IsPlatForm參數且值給1
+  ```php
+  $encryptInfo = [
+            'IsPlatForm' => 1,
+            'MerID' => 'ABC',
+            'Timestamp' => time(),
+            ...
+        ];
+  ```
   * $merKey
     * 請登入PAYUNi平台檢視商店串接資訊取得 Hash Key
   * $merIV
