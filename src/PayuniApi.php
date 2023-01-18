@@ -209,9 +209,15 @@ class PayuniApi
      * @ dateTime 2022-08-23
      */
     private function SetParams(string $type = '') {
+        $isPlatForm = '';
+        if(!empty($this->encryptInfo['IsPlatForm'])){
+            $isPlatForm = $this->encryptInfo['IsPlatForm'];
+            unset($this->encryptInfo['IsPlatForm']);
+        }
         $this->parameter['MerID']       = $this->encryptInfo['MerID'];
         $this->parameter['EncryptInfo'] = $this->Encrypt();
         $this->parameter['HashInfo']    = $this->HashInfo($this->parameter['EncryptInfo']);
+        $this->parameter['IsPlatForm']  = $isPlatForm;
         $this->curlUrl = $this->apiUrl . $type;
     }
     /**
