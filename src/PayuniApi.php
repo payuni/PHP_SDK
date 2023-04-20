@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright 2022 PRESCO. All rights reserved.
 
@@ -14,11 +15,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 namespace Payuni\Sdk;
+
 use Exception;
 
 class PayuniApi
 {
+    // public $encryptInfo, $merKey, $merIV, $apiUrl, $parameter, $curlUrl;
     public function __construct(string $key, string $iv, string $type = '')
     {
         $this->encryptInfo = '';
@@ -43,7 +47,8 @@ class PayuniApi
      * @author    Yifan
      * @ dateTime 2022-08-23
      */
-    public function UniversalTrade(array $encryptInfo, string $tradeType) {
+    public function UniversalTrade(array $encryptInfo, string $tradeType)
+    {
         $this->encryptInfo = $encryptInfo;
         $contrast = [
             'upp' => 'upp',
@@ -56,11 +61,12 @@ class PayuniApi
             'credit_bind_query' => 'credit_bind/query',
             'credit_bind_cancel' => 'credit_bind/cancel',
             'trade_refund_icash' => 'trade/common/refund/icash',
+            'trade_refund_aftee' => 'trade/common/refund/aftee',
         ];
         $checkArr = $this->CheckParams();
-        if ( $checkArr['success'] ) {
+        if ($checkArr['success']) {
             try {
-                switch ( $tradeType ) {
+                switch ($tradeType) {
                     case 'upp': // 交易建立 整合式支付頁
                     case 'atm': // 交易建立 虛擬帳號幕後
                     case 'cvs': // 交易建立 超商代碼幕後
@@ -112,6 +118,7 @@ class PayuniApi
                         }
                         break;
                     case 'trade_refund_icash': // 愛金卡退款(ICASH)
+                    case 'trade_refund_aftee': // 後支付退款(AFTEE)
                         if ($this->encryptInfo['TradeNo'] == null || $this->encryptInfo['TradeNo'] == '') {
                             throw new Exception('TradeNo is not setting');
                         }
@@ -130,17 +137,14 @@ class PayuniApi
                 if ($tradeType == 'upp') {
                     $this->HtmlApi();
                     exit;
-                }
-                else {
+                } else {
                     $result = $this->CurlApi();
                     return $this->ResultProcess($result);
                 }
-            }
-            catch ( Exception $e ) {
+            } catch (Exception $e) {
                 return ['success' => false, 'message' => $e->getMessage()];
             }
-        }
-        else {
+        } else {
             return $checkArr;
         }
     }
@@ -149,38 +153,35 @@ class PayuniApi
      * @ author    Yifan
      * @ dateTime 2022-08-26
      */
-    public function ResultProcess($result) {
+    public function ResultProcess($result)
+    {
         try {
             if (is_array($result)) {
                 $resultArr = $result;
-            }
-            else {
+            } else {
                 $resultArr = json_decode($result, true);
-                if (!is_array($resultArr)){
+                if (!is_array($resultArr)) {
                     throw new Exception('Result must be an array');
                 }
             }
-            if ("ERROR" == $resultArr['Status'] ) {
+            if ("ERROR" == $resultArr['Status']) {
                 return ['success' => true, 'message' => $resultArr];
             }
-            if (isset($resultArr['EncryptInfo'])){
-                if (isset($resultArr['HashInfo'])){
+            if (isset($resultArr['EncryptInfo'])) {
+                if (isset($resultArr['HashInfo'])) {
                     $chkHash = $this->HashInfo($resultArr['EncryptInfo']);
-                    if ( $chkHash != $resultArr['HashInfo'] ) {
+                    if ($chkHash != $resultArr['HashInfo']) {
                         throw new Exception('Hash mismatch');
                     }
                     $resultArr['EncryptInfo'] = $this->Decrypt($resultArr['EncryptInfo']);
                     return ['success' => true, 'message' => $resultArr];
-                }
-                else {
+                } else {
                     throw new Exception('missing HashInfo');
                 }
-            }
-            else {
+            } else {
                 throw new Exception('missing EncryptInfo');
             }
-        }
-        catch ( Exception $e ) {
+        } catch (Exception $e) {
             return ['success' => false, 'message' => $e->getMessage()];
         }
     }
@@ -189,7 +190,8 @@ class PayuniApi
      * @ author    Yifan
      * @ dateTime  2022-08-23
      */
-    private function CheckParams() {
+    private function CheckParams()
+    {
         try {
             if ($this->encryptInfo['MerID'] == null || $this->encryptInfo['MerID'] == '') {
                 throw new Exception('MerID is not setting');
@@ -198,8 +200,7 @@ class PayuniApi
                 throw new Exception('Timestamp is not setting');
             }
             return ['success' => true, 'message' => 'params is set correctly'];
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             return ['success' => false, 'message' => $e->getMessage()];
         }
     }
@@ -208,9 +209,10 @@ class PayuniApi
      * @author    Yifan
      * @ dateTime 2022-08-23
      */
-    private function SetParams(string $type = '') {
+    private function SetParams(string $type = '')
+    {
         $isPlatForm = '';
-        if(!empty($this->encryptInfo['IsPlatForm'])){
+        if (!empty($this->encryptInfo['IsPlatForm'])) {
             $isPlatForm = $this->encryptInfo['IsPlatForm'];
             unset($this->encryptInfo['IsPlatForm']);
         }
@@ -225,13 +227,14 @@ class PayuniApi
      * @ author    Yifan
      * @ dateTime 2022-08-25
      */
-    private function HtmlApi() {
+    private function HtmlApi()
+    {
         $htmlprint  = "<html><body onload='document.getElementById(\"upp\").submit();'>";
-        $htmlprint .= "<form action='".$this->curlUrl."' method='post' id='upp'>";
-        $htmlprint .= "<input name='MerID' type='hidden' value='".$this->parameter['MerID']."' />";
-        $htmlprint .= "<input name='Version' type='hidden' value='".$this->parameter['Version']."' />";
-        $htmlprint .= "<input name='EncryptInfo' type='hidden' value='".$this->parameter['EncryptInfo']."' />";
-        $htmlprint .= "<input name='HashInfo' type='hidden' value='".$this->parameter['HashInfo']."' />";
+        $htmlprint .= "<form action='" . $this->curlUrl . "' method='post' id='upp'>";
+        $htmlprint .= "<input name='MerID' type='hidden' value='" . $this->parameter['MerID'] . "' />";
+        $htmlprint .= "<input name='Version' type='hidden' value='" . $this->parameter['Version'] . "' />";
+        $htmlprint .= "<input name='EncryptInfo' type='hidden' value='" . $this->parameter['EncryptInfo'] . "' />";
+        $htmlprint .= "<input name='HashInfo' type='hidden' value='" . $this->parameter['HashInfo'] . "' />";
         $htmlprint .= "</form></body></html>";
         echo $htmlprint;
     }
@@ -240,7 +243,8 @@ class PayuniApi
      * @ author   Yifan
      * @ dateTime 2022-08-23
      */
-    private function CurlApi() {
+    private function CurlApi()
+    {
         $curlOptions = array(
             CURLOPT_URL            => $this->curlUrl,
             CURLOPT_HEADER         => false,
@@ -263,7 +267,8 @@ class PayuniApi
      * 加密
      *
      */
-    private function Encrypt() {
+    private function Encrypt()
+    {
         $tag = '';
         $encrypted = openssl_encrypt(http_build_query($this->encryptInfo), 'aes-256-gcm', trim($this->merKey), 0, trim($this->merIV), $tag);
         return trim(bin2hex($encrypted . ':::' . base64_encode($tag)));
@@ -271,7 +276,8 @@ class PayuniApi
     /**
      * 解密
      */
-    private function Decrypt(string $encryptStr = '') {
+    private function Decrypt(string $encryptStr = '')
+    {
         list($encryptData, $tag) = explode(':::', hex2bin($encryptStr), 2);
         $encryptInfo = openssl_decrypt($encryptData, 'aes-256-gcm', trim($this->merKey), 0, trim($this->merIV), base64_decode($tag));
         parse_str($encryptInfo, $encryptArr);
@@ -280,7 +286,8 @@ class PayuniApi
     /**
      * hash
      */
-    private function HashInfo(string $encryptStr = '') {
-        return strtoupper(hash('sha256', $this->merKey.$encryptStr.$this->merIV));
+    private function HashInfo(string $encryptStr = '')
+    {
+        return strtoupper(hash('sha256', $this->merKey . $encryptStr . $this->merIV));
     }
 }

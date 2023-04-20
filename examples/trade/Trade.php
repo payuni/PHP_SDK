@@ -82,4 +82,19 @@ class Trade
         ];
         $result = $this->payuniApi->UniversalTrade($encryptInfo, 'trade_refund_icash');
     }
+    /**
+     * trade refund aftee sample code
+     * @author   presco.
+     * @datetime 2023/04/20
+     *
+     */
+    public function tradeRefundAftee(){
+        $encryptInfo = [
+            'MerID' => 'abc',
+            'TradeNo' => '1665472985627866043',
+            'TradeAmt' => 100,
+            'Timestamp' => time()
+        ];
+        $result = $this->payuniApi->UniversalTrade($encryptInfo, 'trade_refund_aftee');
+    }
 }
