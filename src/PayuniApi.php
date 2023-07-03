@@ -22,7 +22,8 @@ use Exception;
 
 class PayuniApi
 {
-    // public $encryptInfo, $merKey, $merIV, $apiUrl, $parameter, $curlUrl;
+    private $attributes = [];
+    public $encryptInfo, $merKey, $merIV, $apiUrl, $parameter, $curlUrl;
     public function __construct(string $key, string $iv, string $type = '')
     {
         $this->encryptInfo = '';
@@ -289,5 +290,15 @@ class PayuniApi
     private function HashInfo(string $encryptStr = '')
     {
         return strtoupper(hash('sha256', $this->merKey . $encryptStr . $this->merIV));
+    }
+
+    public function __set(string $name, mixed $value): void
+    {
+        $this->attributes[$name] = $value;
+    }
+
+    public function __get(string $name): mixed
+    {
+        return $this->attributes[$name] ?? null;
     }
 }
