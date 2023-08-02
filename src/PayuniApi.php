@@ -35,7 +35,6 @@ class PayuniApi
             $prefix .= "sandbox-";
         }
         $this->apiUrl = $prefix . $this->apiUrl;
-
         $this->parameter = [
             'MerID'       => '',
             'Version'     => '1.0',
@@ -72,66 +71,66 @@ class PayuniApi
                     case 'atm': // 交易建立 虛擬帳號幕後
                     case 'cvs': // 交易建立 超商代碼幕後
                         if ($this->encryptInfo['MerTradeNo'] == null || $this->encryptInfo['MerTradeNo'] == '') {
-                            throw new Exception('MerTradeNo is not setting');
+                            throw new Exception('商店訂單編號為必填(MerTradeNo is not setting)');
                         }
                         if ($this->encryptInfo['TradeAmt'] == null || $this->encryptInfo['TradeAmt'] == '') {
-                            throw new Exception('TradeAmt is not setting');
+                            throw new Exception('訂單金額為必填(TradeAmt is not setting)');
                         }
                         break;
                     case 'credit': // 交易建立 信用卡幕後
                         if ($this->encryptInfo['MerTradeNo'] == null || $this->encryptInfo['MerTradeNo'] == '') {
-                            throw new Exception('MerTradeNo is not setting');
+                            throw new Exception('商店訂單編號為必填(MerTradeNo is not setting)');
                         }
                         if ($this->encryptInfo['TradeAmt'] == null || $this->encryptInfo['TradeAmt'] == '') {
-                            throw new Exception('TradeAmt is not setting');
+                            throw new Exception('訂單金額為必填(TradeAmt is not setting)');
                         }
                         if (!isset($this->encryptInfo['CreditHash'])) {
                             if ($this->encryptInfo['CardNo'] == null || $this->encryptInfo['CardNo'] == '') {
-                                throw new Exception('CardNo is not setting');
+                                throw new Exception('信用卡卡號為必填(CardNo is not setting)');
                             }
                             if ($this->encryptInfo['CardExpired'] == null || $this->encryptInfo['CardExpired'] == '') {
-                                throw new Exception('CardExpired is not setting');
+                                throw new Exception('信用卡到期年月為必填(CardExpired is not setting)');
                             }
                             if ($this->encryptInfo['CardCVC'] == null || $this->encryptInfo['CardCVC'] == '') {
-                                throw new Exception('CardCVC is not setting');
+                                throw new Exception('信用卡安全碼為必填(CardCVC is not setting)');
                             }
                         }
                         break;
                     case 'trade_close': // 交易請退款
                         if ($this->encryptInfo['TradeNo'] == null || $this->encryptInfo['TradeNo'] == '') {
-                            throw new Exception('TradeNo is not setting');
+                            throw new Exception('uni序號為必填(TradeNo is not setting)');
                         }
                         if ($this->encryptInfo['CloseType'] == null || $this->encryptInfo['CloseType'] == '') {
-                            throw new Exception('CloseType is not setting');
+                            throw new Exception('關帳類型為必填(CloseType is not setting)');
                         }
                         break;
                     case 'trade_cancel': // 交易取消授權
                         if ($this->encryptInfo['TradeNo'] == null || $this->encryptInfo['TradeNo'] == '') {
-                            throw new Exception('TradeNo is not setting');
+                            throw new Exception('uni序號為必填(TradeNo is not setting)');
                         }
                         break;
                     case 'credit_bind_cancel': // 信用卡token取消(約定/記憶卡號)
                         if ($this->encryptInfo['UseTokenType'] == null || $this->encryptInfo['UseTokenType'] == '') {
-                            throw new Exception('UseTokenType is not setting');
+                            throw new Exception('信用卡Token類型為必填(UseTokenType is not setting)');
                         }
                         if ($this->encryptInfo['BindVal'] == null || $this->encryptInfo['BindVal'] == '') {
-                            throw new Exception('BindVal is not setting');
+                            throw new Exception('綁定回傳值 /信用卡Token(BindVal is not setting)');
                         }
                         break;
                     case 'trade_refund_icash': // 愛金卡退款(ICASH)
                     case 'trade_refund_aftee': // 後支付退款(AFTEE)
                         if ($this->encryptInfo['TradeNo'] == null || $this->encryptInfo['TradeNo'] == '') {
-                            throw new Exception('TradeNo is not setting');
+                            throw new Exception('uni序號為必填(TradeNo is not setting)');
                         }
                         if ($this->encryptInfo['TradeAmt'] == null || $this->encryptInfo['TradeAmt'] == '') {
-                            throw new Exception('TradeAmt is not setting');
+                            throw new Exception('訂單金額為必填(TradeAmt is not setting)');
                         }
                         break;
                     case 'trade_query': // 交易查詢
                     case 'credit_bind_query': // 信用卡token查詢(約定)
                         break;
                     default:
-                        throw new Exception('Unknown params');
+                        throw new Exception('未提供該參數類型(Unknown params)');
                         break;
                 }
                 $this->SetParams($contrast[$tradeType]);
@@ -162,7 +161,7 @@ class PayuniApi
             } else {
                 $resultArr = json_decode($result, true);
                 if (!is_array($resultArr)) {
-                    throw new Exception('Result must be an array');
+                    throw new Exception('傳入參數需為陣列(Result must be an array)');
                 }
             }
             if ("ERROR" == $resultArr['Status']) {
@@ -172,15 +171,15 @@ class PayuniApi
                 if (isset($resultArr['HashInfo'])) {
                     $chkHash = $this->HashInfo($resultArr['EncryptInfo']);
                     if ($chkHash != $resultArr['HashInfo']) {
-                        throw new Exception('Hash mismatch');
+                        throw new Exception('Hash值比對失敗(Hash mismatch)');
                     }
                     $resultArr['EncryptInfo'] = $this->Decrypt($resultArr['EncryptInfo']);
                     return ['success' => true, 'message' => $resultArr];
                 } else {
-                    throw new Exception('missing HashInfo');
+                    throw new Exception('缺少Hash資訊(missing HashInfo)');
                 }
             } else {
-                throw new Exception('missing EncryptInfo');
+                throw new Exception('缺少加密字串(missing EncryptInfo)');
             }
         } catch (Exception $e) {
             return ['success' => false, 'message' => $e->getMessage()];
@@ -195,10 +194,10 @@ class PayuniApi
     {
         try {
             if ($this->encryptInfo['MerID'] == null || $this->encryptInfo['MerID'] == '') {
-                throw new Exception('MerID is not setting');
+                throw new Exception('商店代號為必填(MerID is not setting)');
             }
             if ($this->encryptInfo['Timestamp'] == null || $this->encryptInfo['Timestamp'] == '') {
-                throw new Exception('Timestamp is not setting');
+                throw new Exception('時間戳記為必填(Timestamp is not setting)');
             }
             return ['success' => true, 'message' => 'params is set correctly'];
         } catch (Exception $e) {
