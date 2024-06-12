@@ -231,10 +231,9 @@ class PayuniApi
     {
         $htmlprint  = "<html><body onload='document.getElementById(\"upp\").submit();'>";
         $htmlprint .= "<form action='" . $this->curlUrl . "' method='post' id='upp'>";
-        $htmlprint .= "<input name='MerID' type='hidden' value='" . $this->parameter['MerID'] . "' />";
-        $htmlprint .= "<input name='Version' type='hidden' value='" . $this->parameter['Version'] . "' />";
-        $htmlprint .= "<input name='EncryptInfo' type='hidden' value='" . $this->parameter['EncryptInfo'] . "' />";
-        $htmlprint .= "<input name='HashInfo' type='hidden' value='" . $this->parameter['HashInfo'] . "' />";
+        foreach ($this->parameter as $key => $value) {
+            $htmlprint .= "<input name='" . $key . "' type='hidden' value='" . $value . "' />";
+        }
         $htmlprint .= "</form></body></html>";
         echo $htmlprint;
     }
