@@ -37,7 +37,7 @@ class PayuniApi
         $this->apiUrl = $prefix . $this->apiUrl;
         $this->parameter = [
             'MerID'       => '',
-            'Version'     => '1.0',
+            'Version'     => '',
             'EncryptInfo' => '',
             'HashInfo'    => '',
         ];
@@ -47,9 +47,10 @@ class PayuniApi
      * @author    Yifan
      * @ dateTime 2022-08-23
      */
-    public function UniversalTrade(array $encryptInfo, string $tradeType)
+    public function UniversalTrade(array $encryptInfo, string $tradeType, string $version = '1.0')
     {
         $this->encryptInfo = $encryptInfo;
+        $this->parameter['Version'] = $version;
         $contrast = [
             'upp' => 'upp',
             'atm' => 'atm',
@@ -182,7 +183,13 @@ class PayuniApi
                 throw new Exception('缺少加密字串(missing EncryptInfo)');
             }
         } catch (Exception $e) {
-            return ['success' => false, 'message' => $e->getMessage()];
+            $message = $e->getMessage();
+            switch ($resultArr['Status']) {
+                case 'API00003':
+                    $message = '無API版本號';
+                    break;
+            }
+            return ['success' => false, 'message' => $message];
         }
     }
     /**
