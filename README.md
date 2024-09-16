@@ -20,7 +20,7 @@ $payuniApi = new \Payuni\Sdk\PayuniApi($merKey, $merIV, $type);
 ```
 * API串接
 ```php
-$result = $payuniApi->UniversalTrade($encryptInfo, $mode);
+$result = $payuniApi->UniversalTrade($encryptInfo, $mode, $version);
 ```
 * upp ReturnURL、NotifyURL接收到回傳參數後處理方式
 ```php
@@ -64,6 +64,10 @@ $result = $payuniApi->ResultProcess($requestData);
     * 信用卡Token取消(約定/記憶卡號) => credit_bind_cancel
     * 愛金卡退款(ICASH) => trade_refund_icash
     * 後支付退款(AFTEE) => trade_refund_aftee
+  * $version (非必填)
+    * 所呼叫API的版本號，預設1.0
+    * 若需呼叫其他版本號，該參數請給字串，e.g. $payuni->UniversalTrade($encryptInfo, 'trade_query','2.0');，而非給數字或浮點數
+    * 若需呼叫新版號請參考[統一金流API串接文件](https://www.payuni.com.tw/docs/web/#/7/34)對應功能請求參數的Version備註
 * 其餘請參考[範例](https://github.com/payuni/PHP_SDK/tree/main/examples)
 
 * 原生php
