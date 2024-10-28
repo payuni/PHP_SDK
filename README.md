@@ -53,19 +53,25 @@ $result = $payuniApi->ResultProcess($requestData);
     * 連線測試區 => t
     * 連線正式區 => 不給該參數或給空值
   * $mode
-    * 整合式支付頁 => upp
-    * 虛擬帳號幕後 => atm
-    * 超商代碼幕後 => cvs
-    * 信用卡幕後　 => credit
-    * 交易查詢　　 => trade_query
-    * 交易請退款　 => trade_close
-    * 交易取消授權 => trade_cancel
+    * 整合式支付頁  => upp
+    * 虛擬帳號幕後  => atm
+    * 超商代碼幕後  => cvs
+    * 信用卡幕後　  => credit
+    * LINE Pay幕後 => linepay
+    * AFTEE幕後    => aftee_direct
+    * 交易查詢　 　 => trade_query
+    * 交易請退款 　 => trade_close
+    * 交易取消授權  => trade_cancel
     * 信用卡Token(約定) => credit_bind_query
     * 信用卡Token取消(約定/記憶卡號) => credit_bind_cancel
+    * 交易取消超商代碼(CVS) => cancel_cvs
+    * 後支付確認(AFTEE) => trade_confirm_aftee
     * 愛金卡退款(ICASH) => trade_refund_icash
     * 後支付退款(AFTEE) => trade_refund_aftee
+    * LINE Pay退款(LINE) => trade_refund_linepay
+
   * $version (非必填)
-    * 所呼叫API的版本號，預設1.0
+    * 所呼叫API的版本號，預設1.0(LINE Pay預設為1.1)
     * 若需呼叫其他版本號，該參數請給字串，e.g. $payuni->UniversalTrade($encryptInfo, 'trade_query','2.0');，而非給數字或浮點數
     * 若需呼叫新版號請參考[統一金流API串接文件](https://www.payuni.com.tw/docs/web/#/7/34)對應功能請求參數的Version備註
 * 其餘請參考[範例](https://github.com/payuni/PHP_SDK/tree/main/examples)
