@@ -26,7 +26,7 @@ class PayuniApi
     public $encryptInfo, $merKey, $merIV, $apiUrl, $parameter, $curlUrl;
     public function __construct(string $key, string $iv, string $type = '')
     {
-        $this->encryptInfo = '';
+        $this->encryptInfo = [];
         $this->merKey = $key;
         $this->merIV  = $iv;
         $this->apiUrl = "api.payuni.com.tw/api/";
@@ -52,17 +52,22 @@ class PayuniApi
         $this->encryptInfo = $encryptInfo;
         $this->parameter['Version'] = $version;
         $contrast = [
-            'upp' => 'upp',
-            'atm' => 'atm',
-            'cvs' => 'cvs',
-            'credit' => 'credit',
-            'trade_query' => 'trade/query',
-            'trade_close' => 'trade/close',
-            'trade_cancel' => 'trade/cancel',
-            'credit_bind_query' => 'credit_bind/query',
-            'credit_bind_cancel' => 'credit_bind/cancel',
-            'trade_refund_icash' => 'trade/common/refund/icash',
-            'trade_refund_aftee' => 'trade/common/refund/aftee',
+            'upp'                  => 'upp',
+            'atm'                  => 'atm',
+            'cvs'                  => 'cvs',
+            'credit'               => 'credit',
+            'linepay'              => 'linepay',
+            'aftee_direct'         => 'aftee_direct',
+            'trade_query'          => 'trade/query',
+            'trade_close'          => 'trade/close',
+            'trade_cancel'         => 'trade/cancel',
+            'cancel_cvs'           => 'cancel_cvs',
+            'credit_bind_query'    => 'credit_bind/query',
+            'credit_bind_cancel'   => 'credit_bind/cancel',
+            'trade_refund_icash'   => 'trade/common/refund/icash',
+            'trade_refund_aftee'   => 'trade/common/refund/aftee',
+            'trade_confirm_aftee'  => 'trade/common/confirm/aftee',
+            'trade_refund_linepay' => 'trade/common/refund/linepay',
         ];
         $checkArr = $this->CheckParams();
         if ($checkArr['success']) {
@@ -71,18 +76,23 @@ class PayuniApi
                     case 'upp': // 交易建立 整合式支付頁
                     case 'atm': // 交易建立 虛擬帳號幕後
                     case 'cvs': // 交易建立 超商代碼幕後
-                        if ($this->encryptInfo['MerTradeNo'] == null || $this->encryptInfo['MerTradeNo'] == '') {
+                    case 'linepay': // 交易建立 LINE Pay幕後
+                    case 'aftee_direct': // 交易建立 AFTEE幕後
+                        if ('linepay' == $tradeType) {
+                            $this->parameter['Version'] = '1.1';
+                        }
+                        if (empty($this->encryptInfo['MerTradeNo'])) {
                             throw new Exception('商店訂單編號為必填(MerTradeNo is not setting)');
                         }
-                        if ($this->encryptInfo['TradeAmt'] == null || $this->encryptInfo['TradeAmt'] == '') {
+                        if (empty($this->encryptInfo['TradeAmt'])) {
                             throw new Exception('訂單金額為必填(TradeAmt is not setting)');
                         }
                         break;
                     case 'credit': // 交易建立 信用卡幕後
-                        if ($this->encryptInfo['MerTradeNo'] == null || $this->encryptInfo['MerTradeNo'] == '') {
+                        if (empty($this->encryptInfo['MerTradeNo'])) {
                             throw new Exception('商店訂單編號為必填(MerTradeNo is not setting)');
                         }
-                        if ($this->encryptInfo['TradeAmt'] == null || $this->encryptInfo['TradeAmt'] == '') {
+                        if (empty($this->encryptInfo['TradeAmt'])) {
                             throw new Exception('訂單金額為必填(TradeAmt is not setting)');
                         }
                         if (!isset($this->encryptInfo['CreditHash'])) {
@@ -98,32 +108,39 @@ class PayuniApi
                         }
                         break;
                     case 'trade_close': // 交易請退款
-                        if ($this->encryptInfo['TradeNo'] == null || $this->encryptInfo['TradeNo'] == '') {
+                        if (empty($this->encryptInfo['TradeNo'])) {
                             throw new Exception('uni序號為必填(TradeNo is not setting)');
                         }
-                        if ($this->encryptInfo['CloseType'] == null || $this->encryptInfo['CloseType'] == '') {
+                        if (empty($this->encryptInfo['CloseType'])) {
                             throw new Exception('關帳類型為必填(CloseType is not setting)');
                         }
                         break;
                     case 'trade_cancel': // 交易取消授權
-                        if ($this->encryptInfo['TradeNo'] == null || $this->encryptInfo['TradeNo'] == '') {
+                    case 'trade_confirm_aftee': // 後支付確認(AFTEE)
+                        if (empty($this->encryptInfo['TradeNo'])) {
                             throw new Exception('uni序號為必填(TradeNo is not setting)');
                         }
                         break;
+                    case 'cancel_cvs': // 交易取消超商代碼(CVS)
+                        if (empty($this->encryptInfo['PayNo'])) {
+                            throw new Exception('超商代碼為必填(PayNo is not setting)');
+                        }
+                        break;
                     case 'credit_bind_cancel': // 信用卡token取消(約定/記憶卡號)
-                        if ($this->encryptInfo['UseTokenType'] == null || $this->encryptInfo['UseTokenType'] == '') {
+                        if (empty($this->encryptInfo['UseTokenType'])) {
                             throw new Exception('信用卡Token類型為必填(UseTokenType is not setting)');
                         }
-                        if ($this->encryptInfo['BindVal'] == null || $this->encryptInfo['BindVal'] == '') {
+                        if (empty($this->encryptInfo['BindVal'])) {
                             throw new Exception('綁定回傳值 /信用卡Token(BindVal is not setting)');
                         }
                         break;
                     case 'trade_refund_icash': // 愛金卡退款(ICASH)
                     case 'trade_refund_aftee': // 後支付退款(AFTEE)
-                        if ($this->encryptInfo['TradeNo'] == null || $this->encryptInfo['TradeNo'] == '') {
+                    case 'trade_refund_linepay': // LINE Pay退款(LINE)
+                        if (empty($this->encryptInfo['TradeNo'])) {
                             throw new Exception('uni序號為必填(TradeNo is not setting)');
                         }
-                        if ($this->encryptInfo['TradeAmt'] == null || $this->encryptInfo['TradeAmt'] == '') {
+                        if (empty($this->encryptInfo['TradeAmt'])) {
                             throw new Exception('訂單金額為必填(TradeAmt is not setting)');
                         }
                         break;
@@ -200,10 +217,10 @@ class PayuniApi
     private function CheckParams()
     {
         try {
-            if ($this->encryptInfo['MerID'] == null || $this->encryptInfo['MerID'] == '') {
+            if (empty($this->encryptInfo['MerID'])) {
                 throw new Exception('商店代號為必填(MerID is not setting)');
             }
-            if ($this->encryptInfo['Timestamp'] == null || $this->encryptInfo['Timestamp'] == '') {
+            if (empty($this->encryptInfo['Timestamp'])) {
                 throw new Exception('時間戳記為必填(Timestamp is not setting)');
             }
             return ['success' => true, 'message' => 'params is set correctly'];
